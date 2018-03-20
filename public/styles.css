@@ -13,7 +13,11 @@ body {
 }
 
 div {
-  width: 40%;
+  margin-right: 10px;
   display: inline-block;
   height: 10px;
+}
+
+.url{
+  width: 350px;
 }

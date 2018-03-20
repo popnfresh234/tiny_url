@@ -48,6 +48,11 @@ app.get('/urls/:id', (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+app.get('/u/:shortURL', (req, res) => {
+  let longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
+});
+
 app.post('/urls/:id/delete', (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect('/');
@@ -59,9 +64,9 @@ app.post('/urls', (req, res) =>{
   res.redirect(`http://localhost:8080/urls/${shortUrl}`);
 });
 
-app.get('/u/:shortURL', (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
-  res.redirect(longURL);
+app.post('/urls/:id', (req, res) => {
+  urlDatabase[req.params.id] = req.body.newURL;
+  res.redirect('/');
 });
 
 app.listen(PORT, () => {
