@@ -39,7 +39,6 @@ app.get('/urls', (req, res) => {
 });
 
 app.get('/urls/new', (req, res) => {
-  console.log("NEW");
   res.render('urls_new');
 });
 
