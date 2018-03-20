@@ -54,6 +54,11 @@ app.post('/urls', (req, res) =>{
   res.redirect(`http://localhost:8080/url/${shortUrl}`);
 });
 
+app.get('/u/:shortURL', (req, res) => {
+  let longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
+});
+
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
