@@ -2,8 +2,8 @@ const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 8080; //Defaults to 8080 if not specified
 const bodyParser = require('body-parser');
-app.use(bodyParser.urlencoded({extened: true}));3
-
+app.use(bodyParser.urlencoded({extened: true}));
+app.use(express.static('public'));
 app.set('view engine', 'ejs');
 
 const urlDatabase = {
@@ -38,14 +38,14 @@ app.get('/urls', (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-app.get('/url/:id', (req, res) => {
-  let templateVars = {shortURL: req.params.id, urls: urlDatabase};
-  res.render("urls_show", templateVars);
-});
-
 app.get('/urls/new', (req, res) => {
   console.log("NEW");
   res.render('urls_new');
+});
+
+app.get('/urls/:id', (req, res) => {
+  let templateVars = {shortURL: req.params.id, urls: urlDatabase};
+  res.render("urls_show", templateVars);
 });
 
 app.post('/urls', (req, res) =>{
