@@ -48,10 +48,15 @@ app.get('/urls/:id', (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+app.post('/urls/:id/delete', (req, res) => {
+  delete urlDatabase[req.params.id];
+  res.redirect('/');
+});
+
 app.post('/urls', (req, res) =>{
-  let shortUrl = generateRandomString()
+  let shortUrl = generateRandomString();
   urlDatabase[shortUrl] = req.body.longURL;
-  res.redirect(`http://localhost:8080/url/${shortUrl}`);
+  res.redirect(`http://localhost:8080/urls/${shortUrl}`);
 });
 
 app.get('/u/:shortURL', (req, res) => {

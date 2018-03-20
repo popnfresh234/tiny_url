@@ -11,3 +11,9 @@ li:last-child {
 body {
   background-color: grey;
 }
+
+div {
+  width: 40%;
+  display: inline-block;
+  height: 10px;
+}
