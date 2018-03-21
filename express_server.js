@@ -55,13 +55,14 @@ app.get('/register', (req, res) => {
 
 app.get('/urls', (req, res) => {
   let userId = req.cookies[COOKIE_USER_ID];
-  let templateVars = {urls: urlDatabase, user: users[userId]};
+  let templateVars = {urls: urlDatabase, user: userId};
+  console.log(urlDatabase);
   res.render("urls_index", templateVars);
 });
 
 app.get('/urls/new', (req, res) => {
   let userId = req.cookies[COOKIE_USER_ID];
-  let templateVars = {user: users[userId]};
+  let templateVars = {user: userId};
   if(userId){
     res.render('urls_new', templateVars);
   } else{
@@ -92,12 +93,21 @@ app.post('/urls/:id/delete', (req, res) => {
 });
 
 app.post('/urls', (req, res) =>{
+  let userId = req.cookies[COOKIE_USER_ID];
   let shortUrl = generateRandomString();
-  urlDatabase[shortUrl] = req.body.longURL;
+  let urlObj = {
+    longUrl: req.body.longURL,
+    COOKIE_USER_ID: userId
+  };
+
+  urlDatabase[shortUrl] = urlObj;
+
   res.redirect(`http://localhost:8080/urls/${shortUrl}`);
 });
 
 app.post('/urls/:id', (req, res) => {
+  let userId = req.cookies[COOKIE_USER_ID];
+  urlDatabase[COOKIE_USER_ID] = userId;
   urlDatabase[req.params.id] = req.body.newURL;
   res.redirect('/');
 });
@@ -114,6 +124,7 @@ app.post('/login', (req, res) => {
        matchedUser = user;
     }
   }
+
   if(matchedUser){
     res.cookie(COOKIE_USER_ID, matchedUser.id);
     res.redirect('/');
