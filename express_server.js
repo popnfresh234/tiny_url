@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const COOKIE_USERNAME = 'username';
 const COOKIE_USER_ID = "user_id";
+
 app.use(bodyParser.urlencoded({extened: true}));
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
