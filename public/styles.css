@@ -21,3 +21,8 @@ div {
 .url{
   width: 350px;
 }
+
+label {
+  display: inline-block;
+  width: 70px;
+}​
