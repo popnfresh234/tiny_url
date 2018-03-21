@@ -3,6 +3,7 @@ const app = express();
 const PORT = process.env.PORT || 8080; //Defaults to 8080 if not specified
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const COOKIE_USERNAME = 'username';
 app.use(bodyParser.urlencoded({extened: true}));
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
@@ -73,7 +74,12 @@ app.post('/urls/:id', (req, res) => {
 
 app.post('/login', (req, res) => {
   let userName = req.body.username;
-  res.cookie('username', userName);
+  res.cookie(COOKIE_USERNAME, userName);
+  res.redirect('/');
+});
+
+app.post('/logout', (req, res) => {
+  res.clearCookie(COOKIE_USERNAME);
   res.redirect('/');
 });
 
