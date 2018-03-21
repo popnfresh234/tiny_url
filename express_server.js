@@ -18,7 +18,7 @@ const users = {
     email: "user@example.com",
     password: "purple-monkey-dinosaur"
   },
- "user2RandomID": {
+  "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
     password: "dishwasher-funk"
@@ -77,7 +77,9 @@ app.get('/u/:shortURL', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  res.render(urls_login);
+  let userId = req.cookies[COOKIE_USER_ID];
+  let templateVars = {user: users[userId]};
+  res.render('urls_login', templateVars);
 });
 
 app.post('/urls/:id/delete', (req, res) => {
@@ -97,13 +99,28 @@ app.post('/urls/:id', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-  let userName = req.body.username;
-  res.cookie(COOKIE_USERNAME, userName);
-  res.redirect('/');
+  let email = req.body.email;
+  let password = req.body.password;
+  let id = req.body.id;
+  let matchedUser;
+
+  for(var userId in users){
+     let user = users[userId];
+    if(user.email == email && user.password == password){
+       matchedUser = user;
+    }
+  }
+  if(matchedUser){
+    res.cookie(COOKIE_USER_ID, matchedUser.id);
+    res.redirect('/');
+  } else {
+    res.statusCode = 403;
+    res.send("Bad login info");
+  }
 });
 
 app.post('/logout', (req, res) => {
-  res.clearCookie(COOKIE_USERNAME);
+  res.clearCookie(COOKIE_USER_ID);
   res.redirect('/');
 });
 
@@ -113,7 +130,7 @@ app.post('/register', (req, res) => {
   let password = req.body.password;
 
   if (!email || !password){
-    res.statusCode = '400';
+    res.statusCode = 400;
     res.send("Empty email or password");
   } else {
     users[randomId] = {
@@ -124,7 +141,6 @@ app.post('/register', (req, res) => {
   }
 
   res.cookie(COOKIE_USER_ID, randomId);
-  console.log(users);
   res.redirect('/urls');
 });
 
