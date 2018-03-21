@@ -10,7 +10,12 @@ app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.use(cookieParser());
 
-const urlDatabase = {};
+const urlDatabase = {
+  iXYI4g: {
+    longUrl: 'http://www.google.ca',
+    userId: 'no one'
+  }
+};
 
 const users = {
   "userRandomID": {
@@ -97,7 +102,7 @@ app.post('/urls', (req, res) =>{
   let shortUrl = generateRandomString();
   let urlObj = {
     longUrl: req.body.longURL,
-    COOKIE_USER_ID: userId
+    userId: userId
   };
 
   urlDatabase[shortUrl] = urlObj;

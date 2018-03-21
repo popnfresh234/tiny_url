@@ -6,21 +6,21 @@
 </head>
 <body>
 
-  <% for(var key in urls){ %>
-  <div class="url">
-    <p><%= key %> ---> <a href="/urls/<%= urls[key] %>"><%= urls[key].longUrl %></a></p>
-  </div>
-  <div>
-    <a href="/urls/<%= key %>/">Edit</a>
-  </div>
-  <div>
-    <form method="POST" action="/urls/<%= key %>/delete">
-      <input type="submit" value="Delete">
-    </form>
-  </div>
-  <br>
-
-
+  <% for (var key in urls){ %>
+    <% if (urls[key].userId === user){ %>
+    <div class="url">
+      <p><%= key %> ---> <a href="/urls/<%= urls[key] %>"><%= urls[key].longUrl %></a></p>
+    </div>
+    <div>
+      <a href="/urls/<%= key %>/">Edit</a>
+    </div>
+    <div>
+      <form method="POST" action="/urls/<%= key %>/delete">
+        <input type="submit" value="Delete">
+      </form>
+    </div>
+    <br>
+    <% } %>
   <% } %>
   <h1><a href="/urls/new">Shorten a new URL!</a></h1>
 </body>
