@@ -9,10 +9,7 @@ app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.use(cookieParser());
 
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
+const urlDatabase = {};
 
 function generateRandomString(){
   var randomString = '';
@@ -43,7 +40,7 @@ app.get('/urls', (req, res) => {
 
 app.get('/urls/new', (req, res) => {
   let templateVars = {username: req.cookies.username};
-  res.render('urls_new');
+  res.render('urls_new', templateVars);
 });
 
 app.get('/urls/:id', (req, res) => {
