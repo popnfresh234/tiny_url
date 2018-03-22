@@ -15,7 +15,7 @@
       <a href="/urls/<%= key %>/">Edit</a>
     </div>
     <div>
-      <form method="POST" action="/urls/<%= key %>/delete">
+      <form method="POST" action="/urls/<%= key %>?_method=DELETE"">
         <input type="submit" value="Delete">
       </form>
     </div>

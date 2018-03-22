@@ -4,6 +4,7 @@ const PORT = process.env.PORT || 8080; //Defaults to 8080 if not specified
 const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
+const methodOverride = require('method-override');
 
 const COOKIE_USERNAME = 'username';
 const COOKIE_USER_ID = "user_id";
@@ -17,6 +18,7 @@ app.use(cookieSession({
   // Cookie Options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
+app.use(methodOverride('_method'));
 
 const urlDatabase = {};
 const users = {};
@@ -76,7 +78,7 @@ app.get('/login', (req, res) => {
   res.render('urls_login', templateVars);
 });
 
-app.post('/urls/:id/delete', (req, res) => {
+app.delete('/urls/:id/', (req, res) => {
   delete urlDatabase[req.params.id];
   res.redirect('/');
 });
@@ -92,7 +94,7 @@ app.post('/urls', (req, res) =>{
   res.redirect(`http://localhost:8080/urls/${shortUrl}`);
 });
 
-app.post('/urls/:id', (req, res) => {
+app.put('/urls/:id', (req, res) => {
   let userId = req.session[COOKIE_USER_ID];
   urlDatabase[req.params.id] = {
     longUrl: req.body.newURL,
