@@ -7,7 +7,7 @@
 <body>
 
   <% for (var key in urls){ %>
-    <% if (urls[key].userId === user){ %>
+    <% if (urls[key].user_id === user){ %>
     <div class="url">
       <p><%= key %> ---> <a href="/urls/<%= urls[key] %>"><%= urls[key].longUrl %></a></p>
     </div>

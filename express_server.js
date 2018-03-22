@@ -3,8 +3,11 @@ const app = express();
 const PORT = process.env.PORT || 8080; //Defaults to 8080 if not specified
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcrypt');
+
 const COOKIE_USERNAME = 'username';
 const COOKIE_USER_ID = "user_id";
+const hashedPassword =
 
 app.use(bodyParser.urlencoded({extened: true}));
 app.use(express.static('public'));
@@ -61,8 +64,9 @@ app.get('/register', (req, res) => {
 
 app.get('/urls', (req, res) => {
   let userId = req.cookies[COOKIE_USER_ID];
-  let templateVars = {urls: urlDatabase, user: userId};
+  console.log(users);
   console.log(urlDatabase);
+  let templateVars = {urls: urlDatabase, user: userId};
   res.render("urls_index", templateVars);
 });
 
@@ -103,7 +107,7 @@ app.post('/urls', (req, res) =>{
   let shortUrl = generateRandomString();
   let urlObj = {
     longUrl: req.body.longURL,
-    userId: userId
+    user_id: userId
   };
 
   urlDatabase[shortUrl] = urlObj;
@@ -126,7 +130,8 @@ app.post('/login', (req, res) => {
 
   for(var userId in users){
      let user = users[userId];
-    if(user.email == email && user.password == password){
+     console.log(user);
+    if(user.email == email && bcrypt.compareSync(password, user.password)){
        matchedUser = user;
     }
   }
@@ -148,14 +153,14 @@ app.post('/logout', (req, res) => {
 app.post('/register', (req, res) => {
   let randomId = generateRandomString();
   let email = req.body.email;
-  let password = req.body.password;
+  let password = bcrypt.hashSync(req.body.password, 10);
 
   if (!email || !password){
     res.statusCode = 400;
     res.send("Empty email or password");
   } else {
     users[randomId] = {
-      id: randomId,
+      user_id: randomId,
       email: email,
       password: password
     };

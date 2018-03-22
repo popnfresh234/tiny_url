@@ -4,7 +4,7 @@
   <% include ../partials/_header %>
 </head>
 <body>
-  <% if (urls[shortURL].userId === user) { %>
+  <% if (urls[shortURL].user_id === user) { %>
   <h1>ShortURL: <%= shortURL %></h1>
   <div>
     <form action="/urls/<%= shortURL %>" method="POST">
