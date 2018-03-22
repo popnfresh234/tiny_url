@@ -45,6 +45,7 @@ app.get('/register', (req, res) => {
 app.get('/urls', (req, res) => {
   let userId = req.session[COOKIE_USER_ID];
   let templateVars = {urls: urlDatabase, user: userId};
+  console.log(urlDatabase);
   res.render("urls_index", templateVars);
 });
 
@@ -65,7 +66,7 @@ app.get('/urls/:id', (req, res) => {
 });
 
 app.get('/u/:shortURL', (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
+  let longURL = urlDatabase[req.params.shortURL].longUrl;
   res.redirect(longURL);
 });
 

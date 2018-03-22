@@ -9,7 +9,7 @@
   <% for (var key in urls){ %>
     <% if (urls[key].user_id === user){ %>
     <div class="url">
-      <p><%= key %> ---> <a href="/urls/<%= urls[key] %>"><%= urls[key].longUrl %></a></p>
+      <p><%= key %> ---> <a href="<%= urls[key].longUrl %>"><%= urls[key].longUrl %></a></p>
     </div>
     <div>
       <a href="/urls/<%= key %>/">Edit</a>
