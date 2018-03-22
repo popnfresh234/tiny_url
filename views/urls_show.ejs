@@ -16,7 +16,7 @@
     <br>
     <br>
       <% if (urls[shortURL].counter){ %>
-        <h1>This URL has been visited <%= urls[shortURL].counter %> time(s);<h1>
+        <h1>This URL has been visited <%= urls[shortURL].counter %> time(s); by <%= urls[shortURL].uniqueCounter %> unique visitor(s)<h1>
       <% } else { %>
         <h1>This URL has not been visited </h1>
       <% } %>

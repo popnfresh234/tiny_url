@@ -8,6 +8,7 @@ const methodOverride = require('method-override');
 
 const COOKIE_USERNAME = 'username';
 const COOKIE_USER_ID = "user_id";
+const COOKIE_TRACKING = "tracking";
 
 app.use(bodyParser.urlencoded({extened: true}));
 app.use(express.static('public'));
@@ -82,14 +83,19 @@ app.get('/urls/:id', (req, res) => {
 
 app.get('/u/:shortURL', (req, res) => {
   let urlObject = urlDatabase[req.params.shortURL];
-  if(urlObject){
+  let visited = req.session[COOKIE_TRACKING];
+  if (urlObject){
     let longURL = urlObject.longUrl;
     if(urlObject.counter){
+      if (!visited){
+        urlObject.uniqueCounter ++;
+      }
       urlObject.counter++;
     } else {
       urlObject.counter = 1;
+      urlObject.uniqueCounter = 1;
     }
-    console.log(urlObject.counter);
+    req.session[COOKIE_TRACKING] = 'uniqueVisitor';
     res.redirect(longURL);
   } else {
     res.redirect('/');
