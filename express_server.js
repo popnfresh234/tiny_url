@@ -82,20 +82,20 @@ app.get('/urls/:id', (req, res) => {
 });
 
 app.get('/u/:shortURL', (req, res) => {
+  var visitorId = generateRandomString();
   let urlObject = urlDatabase[req.params.shortURL];
   let visited = req.session[COOKIE_TRACKING];
   if (urlObject){
     let longURL = urlObject.longUrl;
     if(urlObject.counter){
       if (!visited){
-        urlObject.uniqueCounter ++;
+        req.session[COOKIE_TRACKING] = visitorId;
+        urlObject.uniqueVisitorArray.push(generateRandomString());
       }
       urlObject.counter++;
     } else {
       urlObject.counter = 1;
-      urlObject.uniqueCounter = 1;
     }
-    req.session[COOKIE_TRACKING] = 'uniqueVisitor';
     res.redirect(longURL);
   } else {
     res.redirect('/');
@@ -120,7 +120,8 @@ app.post('/urls', (req, res) =>{
   let shortUrl = generateRandomString();
   let urlObj = {
     longUrl: req.body.longURL,
-    user_id: userId
+    user_id: userId,
+    uniqueVisitorArray: []
   };
   urlDatabase[shortUrl] = urlObj;
   res.redirect(`http://localhost:8080/urls/${shortUrl}`);
