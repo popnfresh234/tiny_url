@@ -22,6 +22,11 @@
     <br>
     <% } %>
   <% } %>
-  <h1><a href="/urls/new">Shorten a new URL!</a></h1>
+  <% if (user) { %>
+    <h1><a href="/urls/new">Shorten a new URL!</a></h1>
+  <% } else { %>
+    <h1>Not logged in</h1>
+  <% } %>
+
 </body>
 </html>
