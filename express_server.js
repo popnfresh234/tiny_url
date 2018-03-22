@@ -56,14 +56,14 @@ app.get('/register', (req, res) => {
 
 app.get('/urls', (req, res) => {
   let userId = req.session[COOKIE_USER_ID];
-  let templateVars = {urls: urlDatabase, user: userId};
+  let templateVars = {urls: urlDatabase, user: users[userId]};
   console.log(urlDatabase);
   res.render("urls_index", templateVars);
 });
 
 app.get('/urls/new', (req, res) => {
   let userId = req.session[COOKIE_USER_ID];
-  let templateVars = {user: userId};
+  let templateVars = {user: users[userId]};
   if(userId){
     res.render('urls_new', templateVars);
   } else{
@@ -73,7 +73,7 @@ app.get('/urls/new', (req, res) => {
 
 app.get('/urls/:id', (req, res) => {
   let userId = req.session[COOKIE_USER_ID];
-  let templateVars = {shortURL: req.params.id, urls: urlDatabase, user: userId};
+  let templateVars = {shortURL: req.params.id, urls: urlDatabase, user: users[userId]};
   res.render("urls_show", templateVars);
 });
 

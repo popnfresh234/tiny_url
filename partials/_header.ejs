@@ -6,6 +6,7 @@
   <br>
   <a href="/login">Log in here!</a>
 <% } else { %>
+  <p> Hello <%= user.email %> </p>
   <form method='POST' action="/logout">
     <input type="submit" value="Log out">
   </form>
