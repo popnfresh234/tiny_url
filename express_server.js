@@ -7,15 +7,13 @@ const bcrypt = require('bcrypt');
 
 const COOKIE_USERNAME = 'username';
 const COOKIE_USER_ID = "user_id";
-const hashedPassword =
 
 app.use(bodyParser.urlencoded({extened: true}));
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
 app.use(cookieSession({
   name: 'session',
-  keys: ['key1', 'key2'],
-
+  secret: 'secret',
   // Cookie Options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
@@ -73,7 +71,6 @@ app.get('/u/:shortURL', (req, res) => {
 
 app.get('/login', (req, res) => {
   let userId = req.session[COOKIE_USER_ID];
-  console.log(userId);
   let templateVars = {user: users[userId]};
   res.render('urls_login', templateVars);
 });
@@ -96,8 +93,12 @@ app.post('/urls', (req, res) =>{
 
 app.post('/urls/:id', (req, res) => {
   let userId = req.session[COOKIE_USER_ID];
-  urlDatabase[COOKIE_USER_ID] = userId;
-  urlDatabase[req.params.id] = req.body.newURL;
+  // urlDatabase[COOKIE_USER_ID] = userId;
+  // urlDatabase[req.params.id] = req.body.newURL;
+  urlDatabase[req.params.id] = {
+    longUrl: req.body.newURL,
+    user_id: userId
+  };
   res.redirect('/');
 });
 
@@ -115,7 +116,7 @@ app.post('/login', (req, res) => {
   }
 
   if(matchedUser){
-    req.session[COOKIE_USER_ID] = matchedUser.user_id;2
+    req.session[COOKIE_USER_ID] = matchedUser.user_id;
     res.redirect('/');
   } else {
     res.statusCode = 403;
@@ -137,14 +138,12 @@ app.post('/register', (req, res) => {
     res.statusCode = 400;
     res.send("Empty email or password");
   } else {
-
     users[randomId] = {
       user_id: randomId,
       email: email,
       password: bcrypt.hashSync(req.body.password, 10)
     };
   }
-
   req.session[COOKIE_USER_ID] = randomId;
   res.redirect('/urls');
 });
@@ -152,4 +151,3 @@ app.post('/register', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
-
