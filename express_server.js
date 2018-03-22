@@ -33,6 +33,16 @@ function generateRandomString(){
   return randomString;
 }
 
+function isEmailTaken(email){
+  for (var userId in users){
+    var user = users[userId];
+    var userEmail = user.email;
+    if(user.email === user.email){
+      return true;
+    } return false;
+  }
+}
+
 app.get('/', (req, res) => {
   res.redirect('/urls');
 });
@@ -138,6 +148,11 @@ app.post('/register', (req, res) => {
   if (!email || !password){
     res.statusCode = 400;
     res.send("Empty email or password");
+  }
+
+  if (isEmailTaken(email)) {
+    res.statusCode = 400;
+    res.send("Email already registered");
   } else {
     users[randomId] = {
       user_id: randomId,
