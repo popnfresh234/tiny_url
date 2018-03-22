@@ -131,16 +131,17 @@ app.post('/logout', (req, res) => {
 app.post('/register', (req, res) => {
   let randomId = generateRandomString();
   let email = req.body.email;
-  let password = bcrypt.hashSync(req.body.password, 10);
+  let password = req.body.password;
 
   if (!email || !password){
     res.statusCode = 400;
     res.send("Empty email or password");
   } else {
+
     users[randomId] = {
       user_id: randomId,
       email: email,
-      password: password
+      password: bcrypt.hashSync(req.body.password, 10)
     };
   }
 
