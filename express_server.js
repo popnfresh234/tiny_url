@@ -14,7 +14,7 @@ app.use(cookieParser());
 const urlDatabase = {
   iXYI4g: {
     longUrl: 'http://www.google.ca',
-    userId: 'no one'
+    user_id: 'no one'
   }
 };
 
@@ -78,7 +78,7 @@ app.get('/urls/new', (req, res) => {
 
 app.get('/urls/:id', (req, res) => {
   let userId = req.cookies[COOKIE_USER_ID];
-  let templateVars = {shortURL: req.params.id, urls: urlDatabase, user: users[userId]};
+  let templateVars = {shortURL: req.params.id, urls: urlDatabase, user: userId};
   res.render("urls_show", templateVars);
 });
 
