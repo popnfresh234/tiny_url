@@ -44,7 +44,11 @@ function isEmailTaken(email){
 }
 
 app.get('/', (req, res) => {
-  res.redirect('/urls');
+  if (req.session[COOKIE_USER_ID]){
+    res.redirect('/urls');
+  } else {
+    res.redirect('/login');
+  }
 });
 
 
