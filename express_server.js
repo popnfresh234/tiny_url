@@ -169,9 +169,10 @@ app.post('/register', (req, res) => {
       email: email,
       password: bcrypt.hashSync(req.body.password, 10)
     };
+    req.session[COOKIE_USER_ID] = randomId;
+    res.redirect('/urls');
   }
-  req.session[COOKIE_USER_ID] = randomId;
-  res.redirect('/urls');
+
 });
 
 app.listen(PORT, () => {
