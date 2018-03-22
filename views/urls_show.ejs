@@ -4,7 +4,8 @@
   <% include ../partials/_header %>
 </head>
 <body>
-  <% if (urls[shortURL].user_id === user.user_id) { %>
+  <% if(user) {%>
+  <% if (urls[shortURL] && urls[shortURL].user_id === user.user_id) { %>
   <h1>ShortURL: <%= shortURL %></h1>
   <div>
     <form action="/urls/<%= shortURL %>?_method=PUT" method="POST">
@@ -17,6 +18,9 @@
 
   <% } else { %>
   <p>Not your URL</p>
+  <% } %>
+  <% } else { %>
+    <h1>Not logged in</h1>
   <% } %>
   <a href="/urls">Back to URL list</a>
 

@@ -37,7 +37,7 @@ function isEmailTaken(email){
   for (var userId in users){
     var user = users[userId];
     var userEmail = user.email;
-    if(user.email === user.email){
+    if(userEmail === email){
       return true;
     } return false;
   }
@@ -61,7 +61,6 @@ app.get('/register', (req, res) => {
 app.get('/urls', (req, res) => {
   let userId = req.session[COOKIE_USER_ID];
   let templateVars = {urls: urlDatabase, user: users[userId]};
-  console.log(urlDatabase);
   res.render("urls_index", templateVars);
 });
 
@@ -82,8 +81,13 @@ app.get('/urls/:id', (req, res) => {
 });
 
 app.get('/u/:shortURL', (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL].longUrl;
-  res.redirect(longURL);
+  if(urlDatabase[req.params.shortURL]){
+    let longURL = urlDatabase[req.params.shortURL].longUrl;
+    console.log(longURL);
+    res.redirect(longURL);
+  } else {
+    res.redirect('/');
+  }
 });
 
 app.get('/login', (req, res) => {
@@ -93,7 +97,9 @@ app.get('/login', (req, res) => {
 });
 
 app.delete('/urls/:id/', (req, res) => {
-  delete urlDatabase[req.params.id];
+  if(req.session[COOKIE_USER_ID] && req.session[COOKIE_USER_ID] === urlDatabase[req.params.id].user_id){
+    delete urlDatabase[req.params.id];
+  }
   res.redirect('/');
 });
 
