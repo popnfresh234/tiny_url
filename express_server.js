@@ -20,25 +20,8 @@ app.use(cookieSession({
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
 
-const urlDatabase = {
-  iXYI4g: {
-    longUrl: 'http://www.google.ca',
-    user_id: 'no one'
-  }
-};
-
-const users = {
-  "userRandomID": {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur"
-  },
-  "user2RandomID": {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk"
-  }
-};
+const urlDatabase = {};
+const users = {};
 
 function generateRandomString(){
   var randomString = '';
@@ -54,13 +37,6 @@ app.get('/', (req, res) => {
   res.redirect('/urls');
 });
 
-app.get('/urls.json', (req, res) => {
-  res.json(urlDatabase);
-});
-
-app.get('/hello', (req, res) => {
-  res.end('<html><body>Hello <b>World</b></body></html>\n');
-});
 
 app.get('/register', (req, res) => {
   let userId = req.session[COOKIE_USER_ID];
@@ -114,9 +90,7 @@ app.post('/urls', (req, res) =>{
     longUrl: req.body.longURL,
     user_id: userId
   };
-
   urlDatabase[shortUrl] = urlObj;
-
   res.redirect(`http://localhost:8080/urls/${shortUrl}`);
 });
 
@@ -141,7 +115,7 @@ app.post('/login', (req, res) => {
   }
 
   if(matchedUser){
-    req.session[COOKIE_USER_ID] = matchedUser.user_id;
+    req.session[COOKIE_USER_ID] = matchedUser.user_id;2
     res.redirect('/');
   } else {
     res.statusCode = 403;
