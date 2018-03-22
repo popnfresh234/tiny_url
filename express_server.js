@@ -81,9 +81,15 @@ app.get('/urls/:id', (req, res) => {
 });
 
 app.get('/u/:shortURL', (req, res) => {
-  if(urlDatabase[req.params.shortURL]){
-    let longURL = urlDatabase[req.params.shortURL].longUrl;
-    console.log(longURL);
+  let urlObject = urlDatabase[req.params.shortURL];
+  if(urlObject){
+    let longURL = urlObject.longUrl;
+    if(urlObject.counter){
+      urlObject.counter++;
+    } else {
+      urlObject.counter = 1;
+    }
+    console.log(urlObject.counter);
     res.redirect(longURL);
   } else {
     res.redirect('/');
