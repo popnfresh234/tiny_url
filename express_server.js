@@ -93,8 +93,6 @@ app.post('/urls', (req, res) =>{
 
 app.post('/urls/:id', (req, res) => {
   let userId = req.session[COOKIE_USER_ID];
-  // urlDatabase[COOKIE_USER_ID] = userId;
-  // urlDatabase[req.params.id] = req.body.newURL;
   urlDatabase[req.params.id] = {
     longUrl: req.body.newURL,
     user_id: userId
