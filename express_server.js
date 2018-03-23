@@ -29,8 +29,8 @@ const urlDatabase = {};
 const users = {};
 
 function generateRandomString(length){
-  var randomString = '';
-  var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let randomString = '';
+  let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   for (let i = 0; i < length; i++){
     let randomNumber = Math.floor(Math.random() * chars.length);
     randomString += chars.charAt(randomNumber);
@@ -39,23 +39,20 @@ function generateRandomString(length){
 }
 
 function isEmailTaken(email){
-  for (var userId in users){
-    var user = users[userId];
-    var userEmail = user.email;
-    if(userEmail === email){
+  for (let userId in users){
+    let user = users[userId];
+    let userEmail = user.email;
+    if (userEmail === email){
       return true;
     } return false;
   }
 }
 
-
 function getHumanTime() {
-  var now = new Date();
-  var date = [ now.getMonth() + 1, now.getDate(), now.getFullYear() ];
-  var time = [ now.getHours(), now.getMinutes(), now.getSeconds() ];
-
-// If seconds and minutes are less than 10, add a zero
-  for ( var i = 1; i < 3; i++ ) {
+  let now = new Date();
+  let date = [ now.getMonth() + 1, now.getDate(), now.getFullYear() ];
+  let time = [ now.getHours(), now.getMinutes(), now.getSeconds() ];
+  for ( let i = 1; i < 3; i++ ) {
     if ( time[i] < 10 ) {
       time[i] = "0" + time[i];
     }
@@ -87,9 +84,9 @@ app.get('/urls', (req, res) => {
 app.get('/urls/new', (req, res) => {
   let userId = req.session[COOKIE_USER_ID];
   let templateVars = {user: users[userId]};
-  if(userId){
+  if (userId){
     res.render('urls_new', templateVars);
-  } else{
+  } else {
     res.redirect('/login');
   }
 });
@@ -99,17 +96,18 @@ app.get('/urls/:id', (req, res) => {
   let visit = req.cookies[COOKIE_TRACKING];
   let uniqueVisitors = [];
 
-  if(urlDatabase[req.params.id]){
+  if (urlDatabase[req.params.id]){
     let visitors = urlDatabase[req.params.id].visitors;
-    for(let visit in visitors){
-      if(uniqueVisitors.indexOf(visitors[visit]) === -1){
+    for (let visit in visitors){
+      if (uniqueVisitors.indexOf(visitors[visit]) === -1){
         uniqueVisitors.push(visitors[visit]);
       }
     }
     let templateVars = {shortURL: req.params.id, urls: urlDatabase, user: users[userId], uniqueVisitors: uniqueVisitors};
     res.render("urls_show", templateVars);
+  } else {
+    res.redirect('/');
   }
-  else res.redirect('/');
 });
 
 app.get('/u/:shortUrl', (req, res) => {
@@ -117,9 +115,9 @@ app.get('/u/:shortUrl', (req, res) => {
   let timeStamp = getHumanTime();
   let urlObject = urlDatabase[req.params.shortUrl];
   let visit = req.cookies[COOKIE_TRACKING];
-  if(urlObject){
+  if (urlObject){
     let visitorId = urlObject.visitors[visit];
-    if(!visitorId){
+    if (!visitorId){
       //New user, create tracking cookie
       res.cookie(COOKIE_TRACKING, timeStamp);
       //create new string
@@ -142,7 +140,7 @@ app.get('/login', (req, res) => {
 });
 
 app.delete('/urls/:id/', (req, res) => {
-  if(req.session[COOKIE_USER_ID] && req.session[COOKIE_USER_ID] === urlDatabase[req.params.id].user_id){
+  if (req.session[COOKIE_USER_ID] && req.session[COOKIE_USER_ID] === urlDatabase[req.params.id].user_id){
     delete urlDatabase[req.params.id];
   }
   res.redirect('/');
@@ -173,20 +171,19 @@ app.post('/login', (req, res) => {
   let id = req.body.id;
   let matchedUser;
 
-  for(var userId in users){
+  for (let userId in users){
     let user = users[userId];
-    if(user.email == email && bcrypt.compareSync(password, user.password)){
-     matchedUser = user;
-   }
- }
-
- if(matchedUser){
-  req.session[COOKIE_USER_ID] = matchedUser.user_id;
-  res.redirect('/');
-} else {
-  res.statusCode = 403;
-  res.send("Bad login info");
-}
+    if (user.email == email && bcrypt.compareSync(password, user.password)){
+      matchedUser = user;
+    }
+  }
+  if (matchedUser){
+    req.session[COOKIE_USER_ID] = matchedUser.user_id;
+    res.redirect('/');
+  } else {
+    res.statusCode = 403;
+    res.send("Bad login info");
+  }
 });
 
 app.post('/logout', (req, res) => {

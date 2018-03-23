@@ -4,6 +4,10 @@ body {
   background-color: grey;
 }
 
+ul li {
+  font-size: 16px
+}
+
 div {
   margin-right: 10px;
   display: inline-block;
@@ -18,3 +22,4 @@ label {
   display: inline-block;
   width: 70px;
 }​
+
