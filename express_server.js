@@ -3,6 +3,7 @@ const app = express();
 const PORT = process.env.PORT || 8080; //Defaults to 8080 if not specified
 const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
+const cookieParser = require('cookie-parser')
 const bcrypt = require('bcrypt');
 const methodOverride = require('method-override');
 
@@ -19,6 +20,7 @@ app.use(cookieSession({
   // Cookie Options
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
+app.use(cookieParser());
 app.use(methodOverride('_method'));
 
 const urlDatabase = {};
@@ -77,27 +79,48 @@ app.get('/urls/new', (req, res) => {
 
 app.get('/urls/:id', (req, res) => {
   let userId = req.session[COOKIE_USER_ID];
-  let templateVars = {shortURL: req.params.id, urls: urlDatabase, user: users[userId]};
-  res.render("urls_show", templateVars);
+  let visit = req.cookies[COOKIE_TRACKING];
+  let uniqueVisitors = [];
+
+  if(urlDatabase[req.params.id]){
+    let visitors = urlDatabase[req.params.id].visitors;
+    for(let visit in visitors){
+      if(uniqueVisitors.indexOf(visitors[visit]) === -1){
+        uniqueVisitors.push(visitors[visit]);
+      }
+    }
+    console.log(uniqueVisitors);
+    let templateVars = {shortURL: req.params.id, urls: urlDatabase, user: users[userId], uniqueVisitors: uniqueVisitors};
+    res.render("urls_show", templateVars);
+  }
+  else res.redirect('/');
 });
 
-app.get('/u/:shortURL', (req, res) => {
-  var visitorId = generateRandomString();
-  let urlObject = urlDatabase[req.params.shortURL];
-  let visited = req.session[COOKIE_TRACKING];
-  if (urlObject){
-    let longURL = urlObject.longUrl;
-    if(urlObject.counter){
-      if (!visited){
-        req.session[COOKIE_TRACKING] = visitorId;
-        urlObject.uniqueVisitorArray.push(generateRandomString());
-      }
-      urlObject.counter++;
+app.get('/u/:shortUrl', (req, res) => {
+  console.log("U/SHORUTURL");
+  //Gets the visit time
+  //gets URL object
+  let timeStamp = Date.now();
+  let urlObject = urlDatabase[req.params.shortUrl];
+  let visit = req.cookies[COOKIE_TRACKING];
+  console.log(urlDatabase);
+  console.log(req.params);
+  console.log(urlObject);
+  if(urlObject){
+    let visitorId = urlObject.visitors[visit];
+    if(!visitorId){
+      //New user, create tracking cookie
+      res.cookie(COOKIE_TRACKING, timeStamp);
+      //create new sting
+      urlObject.visitors[timeStamp] = generateRandomString();
+      res.redirect(urlObject.longUrl);
     } else {
-      urlObject.counter = 1;
+      //Returning user, set visit and ID
+      urlObject.visitors[timeStamp] = visitorId;
+      res.redirect(urlObject.longUrl);
     }
-    res.redirect(longURL);
   } else {
+    console.log("WTF");
     res.redirect('/');
   }
 });
@@ -121,7 +144,8 @@ app.post('/urls', (req, res) =>{
   let urlObj = {
     longUrl: req.body.longURL,
     user_id: userId,
-    uniqueVisitorArray: []
+    uniqueVisitorArray: [],
+    visitors: {}
   };
   urlDatabase[shortUrl] = urlObj;
   res.redirect(`http://localhost:8080/urls/${shortUrl}`);
@@ -129,10 +153,7 @@ app.post('/urls', (req, res) =>{
 
 app.put('/urls/:id', (req, res) => {
   let userId = req.session[COOKIE_USER_ID];
-  urlDatabase[req.params.id] = {
-    longUrl: req.body.newURL,
-    user_id: userId
-  };
+  urlDatabase[req.params.id].longUrl = req.body.newURL;
   res.redirect('/');
 });
 
@@ -145,17 +166,17 @@ app.post('/login', (req, res) => {
   for(var userId in users){
     let user = users[userId];
     if(user.email == email && bcrypt.compareSync(password, user.password)){
-       matchedUser = user;
-    }
-  }
+     matchedUser = user;
+   }
+ }
 
-  if(matchedUser){
-    req.session[COOKIE_USER_ID] = matchedUser.user_id;
-    res.redirect('/');
-  } else {
-    res.statusCode = 403;
-    res.send("Bad login info");
-  }
+ if(matchedUser){
+  req.session[COOKIE_USER_ID] = matchedUser.user_id;
+  res.redirect('/');
+} else {
+  res.statusCode = 403;
+  res.send("Bad login info");
+}
 });
 
 app.post('/logout', (req, res) => {
