@@ -2,8 +2,8 @@
 
 ## Final prdouct
 
-!["screenshot description"](#)
-!["screenshot description"](#)
+!["URLS list"](https://github.com/popnfresh234/tiny_url/blob/master/docs/urls_list_page.jpeg)
+!["URL details"](https://github.com/popnfresh234/tiny_url/blob/master/docs/url_details.jpeg)
 
 ## Dependencies
 
