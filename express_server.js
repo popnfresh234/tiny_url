@@ -3,13 +3,16 @@ const app = express();
 const PORT = process.env.PORT || 8080; //Defaults to 8080 if not specified
 const bodyParser = require('body-parser');
 const cookieSession = require('cookie-session');
-const cookieParser = require('cookie-parser')
+const cookieParser = require('cookie-parser');
 const bcrypt = require('bcrypt');
 const methodOverride = require('method-override');
 
 const COOKIE_USERNAME = 'username';
 const COOKIE_USER_ID = "user_id";
 const COOKIE_TRACKING = "tracking";
+const BCRYPT_SALT_ROUNDS = 10;
+const USER_ID_LENGTH = 10;
+const SHORT_URL_LENGTH = 6;
 
 app.use(bodyParser.urlencoded({extened: true}));
 app.use(express.static('public'));
@@ -17,8 +20,7 @@ app.set('view engine', 'ejs');
 app.use(cookieSession({
   name: 'session',
   secret: 'secret',
-  // Cookie Options
-  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  maxAge: 24 * 60 * 60 * 1000
 }));
 app.use(cookieParser());
 app.use(methodOverride('_method'));
@@ -26,10 +28,10 @@ app.use(methodOverride('_method'));
 const urlDatabase = {};
 const users = {};
 
-function generateRandomString(){
+function generateRandomString(length){
   var randomString = '';
   var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < 6; i++){
+  for (let i = 0; i < length; i++){
     let randomNumber = Math.floor(Math.random() * chars.length);
     randomString += chars.charAt(randomNumber);
   }
@@ -44,6 +46,21 @@ function isEmailTaken(email){
       return true;
     } return false;
   }
+}
+
+
+function getHumanTime() {
+  var now = new Date();
+  var date = [ now.getMonth() + 1, now.getDate(), now.getFullYear() ];
+  var time = [ now.getHours(), now.getMinutes(), now.getSeconds() ];
+
+// If seconds and minutes are less than 10, add a zero
+  for ( var i = 1; i < 3; i++ ) {
+    if ( time[i] < 10 ) {
+      time[i] = "0" + time[i];
+    }
+  }
+  return date.join("/") + " " + time.join(":")  + " UTC";
 }
 
 app.get('/', (req, res) => {
@@ -89,7 +106,6 @@ app.get('/urls/:id', (req, res) => {
         uniqueVisitors.push(visitors[visit]);
       }
     }
-    console.log(uniqueVisitors);
     let templateVars = {shortURL: req.params.id, urls: urlDatabase, user: users[userId], uniqueVisitors: uniqueVisitors};
     res.render("urls_show", templateVars);
   }
@@ -97,22 +113,17 @@ app.get('/urls/:id', (req, res) => {
 });
 
 app.get('/u/:shortUrl', (req, res) => {
-  console.log("U/SHORUTURL");
-  //Gets the visit time
-  //gets URL object
-  let timeStamp = Date.now();
+
+  let timeStamp = getHumanTime();
   let urlObject = urlDatabase[req.params.shortUrl];
   let visit = req.cookies[COOKIE_TRACKING];
-  console.log(urlDatabase);
-  console.log(req.params);
-  console.log(urlObject);
   if(urlObject){
     let visitorId = urlObject.visitors[visit];
     if(!visitorId){
       //New user, create tracking cookie
       res.cookie(COOKIE_TRACKING, timeStamp);
-      //create new sting
-      urlObject.visitors[timeStamp] = generateRandomString();
+      //create new string
+      urlObject.visitors[timeStamp] = generateRandomString(USER_ID_LENGTH);
       res.redirect(urlObject.longUrl);
     } else {
       //Returning user, set visit and ID
@@ -120,7 +131,6 @@ app.get('/u/:shortUrl', (req, res) => {
       res.redirect(urlObject.longUrl);
     }
   } else {
-    console.log("WTF");
     res.redirect('/');
   }
 });
@@ -140,7 +150,7 @@ app.delete('/urls/:id/', (req, res) => {
 
 app.post('/urls', (req, res) =>{
   let userId = req.session[COOKIE_USER_ID];
-  let shortUrl = generateRandomString();
+  let shortUrl = generateRandomString(SHORT_URL_LENGTH);
   let urlObj = {
     longUrl: req.body.longURL,
     user_id: userId,
@@ -185,7 +195,7 @@ app.post('/logout', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-  let randomId = generateRandomString();
+  let randomId = generateRandomString(USER_ID_LENGTH);
   let email = req.body.email;
   let password = req.body.password;
 
@@ -201,12 +211,11 @@ app.post('/register', (req, res) => {
     users[randomId] = {
       user_id: randomId,
       email: email,
-      password: bcrypt.hashSync(req.body.password, 10)
+      password: bcrypt.hashSync(req.body.password, BCRYPT_SALT_ROUNDS)
     };
     req.session[COOKIE_USER_ID] = randomId;
     res.redirect('/urls');
   }
-
 });
 
 app.listen(PORT, () => {

@@ -18,8 +18,8 @@
       <% if (Object.keys(urls[shortURL].visitors).length > 0){ %>
         <h1>This URL has been visited <%= Object.keys(urls[shortURL].visitors).length %> time(s); by <%= uniqueVisitors.length %> unique visitor(s)<h1>
         <ul>
-        <% for (var id in urls[shortURL].visitors) { %>
-          <li> <%= id %> visited at <%= urls[shortURL].visitors[id] %></li>
+        <% for (var visit in urls[shortURL].visitors) { %>
+          <li> <%= urls[shortURL].visitors[visit] %> visited at <%= visit %></li>
         <% } %>
         </ul>
       <% } else { %>
