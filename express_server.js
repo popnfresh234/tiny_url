@@ -8,8 +8,8 @@ const bcrypt = require('bcrypt');
 const methodOverride = require('method-override');
 
 const COOKIE_USERNAME = 'username';
-const COOKIE_USER_ID = "user_id";
-const COOKIE_TRACKING = "tracking";
+const COOKIE_USER_ID = 'user_id';
+const COOKIE_TRACKING = 'tracking';
 const BCRYPT_SALT_ROUNDS = 10;
 const USER_ID_LENGTH = 10;
 const SHORT_URL_LENGTH = 6;
@@ -30,7 +30,7 @@ const users = {};
 
 function generateRandomString(length){
   let randomString = '';
-  let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   for (let i = 0; i < length; i++) {
     let randomNumber = Math.floor(Math.random() * chars.length);
     randomString += chars.charAt(randomNumber);
@@ -54,10 +54,10 @@ function getHumanTime() {
   let time = [ now.getHours(), now.getMinutes(), now.getSeconds() ];
   for ( let i = 1; i < 3; i++ ) {
     if ( time[i] < 10 ) {
-      time[i] = "0" + time[i];
+      time[i] = '0' + time[i];
     }
   }
-  return date.join("/") + " " + time.join(":")  + " UTC";
+  return date.join('/') + ' ' + time.join(':')  + ' UTC';
 }
 
 function findMatchedUser(email, password){
@@ -86,7 +86,7 @@ app.get('/register', (req, res) => {
 app.get('/urls', (req, res) => {
   let userId = req.session[COOKIE_USER_ID];
   let templateVars = {urls: urlDatabase, user: users[userId]};
-  res.render("urls_index", templateVars);
+  res.render('urls_index', templateVars);
 });
 
 app.get('/urls/new', (req, res) => {
@@ -112,7 +112,7 @@ app.get('/urls/:id', (req, res) => {
       }
     }
     let templateVars = {shortURL: req.params.id, urls: urlDatabase, user: users[userId], uniqueVisitors: uniqueVisitors};
-    res.render("urls_show", templateVars);
+    res.render('urls_show', templateVars);
   } else {
     res.redirect('/');
   }
@@ -144,7 +144,7 @@ app.get('/u/:shortUrl', (req, res) => {
 app.get('/login', (req, res) => {
   let userId = req.session[COOKIE_USER_ID];
   if (userId) {
-    res.redirect("/urls");
+    res.redirect('/urls');
   }
   let templateVars = {user: users[userId]};
   res.render('urls_login', templateVars);
@@ -185,7 +185,7 @@ app.post('/login', (req, res) => {
     res.redirect('/');
   } else {
     res.statusCode = 403;
-    res.send("Bad login info");
+    res.send('Bad login info');
   }
 });
 
@@ -201,12 +201,12 @@ app.post('/register', (req, res) => {
 
   if (!email || !password) {
     res.statusCode = 400;
-    res.send("Empty email or password");
+    res.send('Empty email or password');
   }
 
   if (isEmailTaken(email)) {
     res.statusCode = 400;
-    res.send("Email already registered");
+    res.send('Email already registered');
   } else {
     users[randomId] = {
       user_id: randomId,
